@@ -1,0 +1,37 @@
+name: Rust
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install dependencies
+      run: |
+        export DEBIAN_FRONTED=noninteractive
+        sudo apt-get -qq update
+        sudo apt-get install -y libxkbcommon-dev
+    - uses: actions/checkout@v2
+    - name: Install latest nightly
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+        components: rustfmt, clippy
+    - name: Build
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+    - name: Run tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
